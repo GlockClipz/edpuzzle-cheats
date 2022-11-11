@@ -10,6 +10,59 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
 
 function init() {
   getCSRF();
+  getAssignment();
+}
+
+function getAssignment(callback) {
+  if (!(/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
+    alert("run this script on edpuzzle assignment")
+    return;
+  }
+  
+  var assignment_id = window.location.href.split("/")[4];
+  if (typeof assignment_id == "undefined") {
+    alert("couldn't not infer the assignment id");
+    return;
+  }
+  var url1 = "https://edpuzzle.com/api/v3/assignments/"+assignment_id;
+
+  httpGet(url1, function(){
+    var assignment = JSON.parse(this.responseText);
+    if ((""+this.status)[0] == "2") {
+      openPopup(assignment);
+      getMedia(assignment);
+    }
+    else {
+      alert(`Error: Status code ${this.status} recieved when attempting to fetch the assignment data.`)
+    }
+  });
+}
+function getMedia(assignment, needle="", request_count=1) {
+  var media_id = assignment.teacherAssignments[0].contentId;
+  var classroom_id = assignment.teacherAssignments[0].classroom.id;
+  var url2 = "https://edpuzzle.com/api/v3/assignments/classrooms/"+classroom_id+"/students/?needle="+needle;
+  httpGet(url2, function() {
+    if ((""+this.status)[0] == "2") {
+      var classroom = JSON.parse(this.responseText);
+      if (classroom.medias.length == 0) {
+        parseQuestions(null);
+        return;
+      }
+      var media;
+      for (let i=0; i<classroom.medias.length; i++) {
+        media = classroom.medias[i];
+        if (media._id == media_id) {
+          parseQuestions(media.questions);
+          return;
+        }
+      }
+      getMedia(assignment, classroom.teacherAssignments[classroom.teacherAssignments.length-1]._id, request_count+1);
+    }
+    else {
+      var questions = questions;
+      content.innerHTML += `Error: Status code ${this.status} recieved when attempting to fetch the answers.`;
+    }
+  });
 }
 
 function getCSRF() {
@@ -17,7 +70,7 @@ function getCSRF() {
   httpGet(csrfURL, function(){
     var data = JSON.parse(this.responseText);
     var csrf = data.CSRFToken;
-    getAttempt(csrf, document.assignment);
+    getAttempt(csrf, assignment);
   });
 }
 
@@ -50,8 +103,8 @@ function skipVideo(csrf, attempt) {
     var attemptId = attempt._id;
     var filteredQuestions = [];
     
-    for (let i=0; i<document.questions.length; i++) {
-      let question = document.questions[i];
+    for (let i=0; i<questions.length; i++) {
+      let question = questions[i];
       if (question.type != "multiple-choice") {continue;}
       
       if (filteredQuestions.length == 0) {
@@ -67,7 +120,7 @@ function skipVideo(csrf, attempt) {
     
     if (filteredQuestions.length > 0) {
       var total = filteredQuestions.length;
-      postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
+      postAnswers(csrf, assignment, filteredQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
 }
