@@ -46,14 +46,6 @@ function openPopup(assignment) {
     thumbnail = "https://"+window.location.hostname+thumbnail;
   }
   
-  var deadline_text;
-  if (teacher_assignment.preferences.dueDate == "") {
-    deadline_text = "no due date"
-  }
-  else {
-    deadline_text = "due on "+(new Date(teacher_assignment.preferences.dueDate)).toDateString();
-  }
-  
   var base_html = `
   <head>
     <script>
@@ -64,13 +56,6 @@ function openPopup(assignment) {
           eval(this.responseText);
         });
         request.send();
-      }
-      function skip_video() {
-        var button = document.getElementById("skipper");
-        button.disabled = true; 
-        button.value = "Downloading script...";
-
-        http_exec("https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/skipper.js", button);
       }
       function answer_questions() {
         var skipper = document.getElementById("skipper");
@@ -131,10 +116,7 @@ function openPopup(assignment) {
       </td>
       <td style="vertical-align:top" class="title_div">
         <p style="font-size: 16px"><b>${media.title}</b></h2>
-        <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
-        <p style="font-size: 12px">Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
-        <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
-        <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" disabled/>
+        <p style="font-size: 12px">the answers r underlined</p>
         <input id="answers_button" type="button" value="Answer Questions" onclick="answer_questions();" disabled/>
       </td>
     </tr>
@@ -180,7 +162,7 @@ function getMedia(assignment, needle="", request_count=1) {
       var content = popup.document.getElementById("content");
       popup.document.questions = questions;
       text.remove();
-      content.innerHTML += `stat code ${this.status} when getting answers`;
+      content.innerHTML += `Error: Status code ${this.status} recieved when attempting to fetch the answers.`;
     }
   });
 }
@@ -192,7 +174,7 @@ function parseQuestions(questions) {
   text.remove();
 
   if (questions == null) {
-    content.innerHTML += `<p style="font-size: 12px">couldnt get the media </p>`;
+    content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
     return;
   }
   
