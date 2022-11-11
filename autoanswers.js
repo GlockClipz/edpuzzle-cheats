@@ -1,5 +1,3 @@
-var button = document.getElementById("answers_button");
-
 function httpGet(url, callback, headers=[], method="GET", content=null) {
   var request = new XMLHttpRequest();
   request.addEventListener("load", callback);
@@ -11,7 +9,6 @@ function httpGet(url, callback, headers=[], method="GET", content=null) {
 }
 
 function init() {
-  button.value = "Getting CSRF token...";
   getCSRF();
 }
 
@@ -20,7 +17,6 @@ function getCSRF() {
   httpGet(csrfURL, function(){
     var data = JSON.parse(this.responseText);
     var csrf = data.CSRFToken;
-    button.value = "Getting attempt..."
     getAttempt(csrf, document.assignment);
   });
 }
@@ -30,7 +26,6 @@ function getAttempt(csrf, assignment) {
   var attemptURL = "https://edpuzzle.com/api/v3/assignments/"+id+"/attempt";
   httpGet(attemptURL, function(){
     var data = JSON.parse(this.responseText);
-    button.value = "Skipping video..."
     skipVideo(csrf, data);
   });
 }
@@ -72,7 +67,6 @@ function skipVideo(csrf, attempt) {
     
     if (filteredQuestions.length > 0) {
       var total = filteredQuestions.length;
-      button.value = "Posting answers...";
       postAnswers(csrf, document.assignment, filteredQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
@@ -112,11 +106,9 @@ function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
   ];
   httpGet(answersURL, function() {
     if (remainingQuestions.length == 0) {
-      button.value = "Answers submitted successfully.";
       opener.location.reload();
     }
     else {
-      button.value = `Posting answers... (${total-remainingQuestions.length+1}/${total})`;
       postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
     }
   }, headers, "POST", JSON.stringify(content));
