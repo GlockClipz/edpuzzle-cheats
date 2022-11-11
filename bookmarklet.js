@@ -1,0 +1,1 @@
+javascript: var host = window.location.hostname; var httpReq = new XMLHttpRequest(); httpReq.open("GET", "https://cdn.jsdelivr.net/gh/ading2210/edpuzzle-answers@latest/script.js", true); httpReq.addEventListener("load", function(){eval(this.responseText);}); httpReq.send();
