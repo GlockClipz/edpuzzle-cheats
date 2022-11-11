@@ -29,8 +29,7 @@ function getAssignment(callback) {
   httpGet(url1, function(){
     var assignment = JSON.parse(this.responseText);
     if ((""+this.status)[0] == "2") {
-      openPopup(assignment);
-      getMedia(assignment);
+        getMedia(assignment);
     }
     else {
       alert(`Error: Status code ${this.status} recieved when attempting to fetch the assignment data.`)
