@@ -144,7 +144,6 @@ function openPopup(assignment) {
     <p style="font-size: 12px" id="loading_text"></p>
   </div>
   <hr>
-  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a>`;
   popup = window.open("about:blank", "", "width=600, height=400");
   popup.document.write(base_html);
 
@@ -181,7 +180,7 @@ function getMedia(assignment, needle="", request_count=1) {
       var content = popup.document.getElementById("content");
       popup.document.questions = questions;
       text.remove();
-      content.innerHTML += `Error: Status code ${this.status} recieved when attempting to fetch the answers.`;
+      content.innerHTML += `stat code ${this.status} when getting answers`;
     }
   });
 }
@@ -193,7 +192,7 @@ function parseQuestions(questions) {
   text.remove();
 
   if (questions == null) {
-    content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
+    content.innerHTML += `<p style="font-size: 12px">couldnt get the media </p>`;
     return;
   }
   
